@@ -1,5 +1,6 @@
 import re
 from numbers import Number
+from string import digits
 from typing import List
 
 if __name__ == "__main__":
@@ -47,7 +48,7 @@ class Calc:
 
     _numbers_patterns = [
         # `0[b|o|x]##`
-        r"0[box][\da-f]+",
+        r"0[box][\da-z]+",
         # `##[.[##]][e[+|-]##]`
         r"(?:\d+(?:\.\d*)?|\.\d+)(?:e[+\-]?\d+)?",
     ]
@@ -61,6 +62,7 @@ class Calc:
     ]
     _all_patterns = "|".join(_numbers_patterns + _ops_pattern + _brackets_pattern)
     _tokens_re = re.compile(_all_patterns, re.IGNORECASE)
+    _non_whitespace_re = re.compile(r"[^\s]")
     _sym_tokens = {
         "[": Bracket.S_OPEN,
         "(": Bracket.P_OPEN,
@@ -78,30 +80,48 @@ class Calc:
     }
 
     def _tokenize(self):
-        # TODO: detect invalid tokens
+        text = self._input
+        regexp = self._tokens_re
 
-        for match in self._tokens_re.finditer(self._input):
-            s = match[0]
-            token = None
-            if s[0] in ".0123456789abcdefABCDEF":
-                if s[:2] in ("0b", "0B"):
-                    token = int(s[2:], 2)
-                elif s[:2] in ("0o", "0O"):
-                    token = int(s[2:], 8)
-                elif s[:2] in ("0x", "0X"):
-                    token = int(s[2:], 16)
-                else:
-                    token = float(s)
-                    if token.is_integer():
-                        token = int(token)
-            elif s in self._sym_tokens:
-                token = self._sym_tokens[s]
-            else:
+        def _check_for_illegal_text_between(pos: int, end_pos: int):
+            gap_text = text[pos:end_pos]
+            invalid_text_match = self._non_whitespace_re.search(gap_text)
+            if invalid_text_match:
                 raise ValueError(
-                    f"Unrecognized token: {s} between {match.start()} and {match.end()}"
+                    f"unexpected text at character {pos + invalid_text_match.start() + 1}: "
+                    f"'{invalid_text_match[0]}'"
                 )
 
-            self._tokens.append((token, match.start(), match.end()))
+        pos = 0
+        match = regexp.search(text)
+        while match:
+            _check_for_illegal_text_between(pos, match.start())
+
+            match_text = match[0]
+            val = None
+            if match_text[0] in f".{digits}":  # Numeric token
+                if match_text[:2].lower() == "0b":
+                    val = int(match_text[2:], 2)
+                elif match_text[:2].lower() == "0o":
+                    val = int(match_text[2:], 8)
+                elif match_text[:2].lower() == "0x":
+                    val = int(match_text[2:], 16)
+                else:
+                    val = float(match_text)
+                    if val.is_integer():
+                        val = int(val)
+            elif match_text in self._sym_tokens:
+                val = self._sym_tokens[match_text]
+            else:
+                raise NotImplementedError(
+                    f"unrecognized token at character {match.start()}: '{match_text}'"
+                )
+            self._tokens.append((val, match.start(), match.end()))
+
+            pos = match.end()
+            match = regexp.search(text, pos)
+
+        _check_for_illegal_text_between(pos, len(text))
 
     def _build_tree(self):
         self._tokenize()
@@ -126,10 +146,15 @@ def main():
         s = input("Input the expression to evaluate: ").strip()
         while s:
             calc.input = s
-            calc._tokenize()
-            print(f"Tokens: {[(str(t[0]), t[1], t[2]) for t in calc._tokens]}")
-            print(f"> {calc.result}")
-            s = input("Input the expression to evaluate: ").strip()
+
+            try:
+                calc._tokenize()
+                print(f"Tokens: {[(str(t[0]), t[1], t[2]) for t in calc._tokens]}")
+                print(f"> {calc.result}")
+            except ValueError as ve:
+                print(ve)
+
+            s = input("\nInput the expression to evaluate: ").strip()
         else:
             print("quit")
     except EOFError:
