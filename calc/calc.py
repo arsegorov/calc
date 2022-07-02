@@ -28,7 +28,7 @@ class Calc:
     def __init__(self, input_string: str = ""):
         self._input = input_string
         self._tokens: List[Bracket | Op | Number] = []
-        self._tree: Tree = None
+        self._tree: Tree | None = None
         self._value: Number | None = None
         self._is_evaluated = False
 
