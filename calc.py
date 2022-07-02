@@ -1,0 +1,139 @@
+import re
+from numbers import Number
+from typing import List
+
+if __name__ == "__main__":
+    from op import Bracket, Op
+    from tree import Tree
+else:
+    from .op import Bracket, Op
+    from .tree import Tree
+
+
+class OpNode(Tree):
+    def __init__(
+        self, op: Op, leftTree: "Tree | None" = None, rightTree: "Tree | None" = None
+    ):
+        super().__init__(leftTree, rightTree)
+        self._op = op
+
+
+class NumNode(Tree):
+    def __init__(self, value: Number):
+        super().__init__()
+        self._value = value
+
+
+class Calc:
+    def __init__(self, input_string: str = ""):
+        self._input = input_string
+        self._tokens: List[Bracket | Op | Number] = []
+        self._tree: Tree = None
+        self._value: Number | None = None
+        self._is_evaluated = False
+
+    @property
+    def input(self):
+        return self._input
+
+    @input.setter
+    def input(self, input_string: str):
+        if input_string != self._input:
+            self._input = input_string
+            self._tokens = []
+            self._tree = None
+            self._value = None
+            self._is_evaluated = False
+
+    def _tokenize(self):
+        # TODO: detect invalid tokens
+        numbers = [
+            r"0[box][\da-f]+",
+            r"(?:\d+\.?\d*|\.\d+)(?:e[+\-]?\d+)?",
+        ]
+        ops = [r"\+|\-|\*{1,2}|\/{1,2}|\%"]
+        brackets = [r"\[|\]|\(|\)|\{|\}"]
+        all_patterns = "|".join(numbers + ops + brackets)
+
+        for match in re.compile(all_patterns, re.IGNORECASE).finditer(self._input):
+            s = match[0]
+            token = None
+            if s[0] in ".0123456789abcdefABCDEF":
+                if s[:2] in ("0b", "0B"):
+                    token = int(s[2:], 2)
+                elif s[:2] in ("0o", "0O"):
+                    token = int(s[2:], 8)
+                elif s[:2] in ("0x", "0X"):
+                    token = int(s[2:], 16)
+                else:
+                    token = float(s)
+                    if token.is_integer():
+                        token = int(token)
+            elif s == "[":
+                token = Bracket.S_OPEN
+            elif s == "(":
+                token = Bracket.P_OPEN
+            elif s == "{":
+                token = Bracket.C_OPEN
+            elif s == "]":
+                token = Bracket.S_CLOSE
+            elif s == ")":
+                token = Bracket.P_CLOSE
+            elif s == "}":
+                token = Bracket.C_CLOSE
+            elif s == "+":
+                token = Op.ADD
+            elif s == "-":
+                token = Op.SUB
+            elif s == "*":
+                token = Op.MULT
+            elif s == "/":
+                token = Op.DIV
+            elif s == "//":
+                token = Op.DIV_INT
+            elif s == "%":
+                token = Op.MOD
+            elif s == "**":
+                token = Op.EXP
+            else:
+                raise ValueError(
+                    f"Unrecognized token: {s} between {match.start()} and {match.end()}"
+                )
+
+            self._tokens.append((token, match.start(), match.end()))
+
+    def _build_tree(self):
+        self._tokenize()
+
+    def _eval(self):
+        self._build_tree()
+
+    @property
+    def result(self):
+        if not self._is_evaluated:
+            self._eval()
+            self._is_evaluated = True
+        return self._value
+
+
+def main():
+    from json import dumps
+    from pprint import pprint
+
+    calc = Calc()
+    try:
+        s = input("Input the expression to evaluate: ").strip()
+        while s:
+            calc.input = s
+            calc._tokenize()
+            print(f"Tokens: {[(str(t[0]), t[1], t[2]) for t in calc._tokens]}")
+            print(f"> {calc.result}")
+            s = input("Input the expression to evaluate: ").strip()
+        else:
+            print("quit")
+    except EOFError:
+        print("quit")
+
+
+if __name__ == "__main__":
+    main()
