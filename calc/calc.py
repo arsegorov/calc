@@ -45,17 +45,42 @@ class Calc:
             self._value = None
             self._is_evaluated = False
 
+    _numbers_patterns = [
+        # `0[b|o|x]##`
+        r"0[box][\da-f]+",
+        # `##[.[##]][e[+|-]##]`
+        r"(?:\d+(?:\.\d*)?|\.\d+)(?:e[+\-]?\d+)?",
+    ]
+    _ops_pattern = [
+        # `+` | `-` | `*[*]` | `/[/]` | `%`
+        r"\+|\-|\*{1,2}|\/{1,2}|\%"
+    ]
+    _brackets_pattern = [
+        # `[` | `]` | `(` | `)` | `{` | `}`
+        r"[\[\]\(\)\{\}]"
+    ]
+    _all_patterns = "|".join(_numbers_patterns + _ops_pattern + _brackets_pattern)
+    _tokens_re = re.compile(_all_patterns, re.IGNORECASE)
+    _sym_tokens = {
+        "[": Bracket.S_OPEN,
+        "(": Bracket.P_OPEN,
+        "{": Bracket.C_OPEN,
+        "]": Bracket.S_CLOSE,
+        ")": Bracket.P_CLOSE,
+        "}": Bracket.C_CLOSE,
+        "+": Op.ADD,
+        "-": Op.SUB,
+        "*": Op.MULT,
+        "/": Op.DIV,
+        "//": Op.DIV_INT,
+        "%": Op.MOD,
+        "**": Op.EXP,
+    }
+
     def _tokenize(self):
         # TODO: detect invalid tokens
-        numbers = [
-            r"0[box][\da-f]+",
-            r"(?:\d+\.?\d*|\.\d+)(?:e[+\-]?\d+)?",
-        ]
-        ops = [r"\+|\-|\*{1,2}|\/{1,2}|\%"]
-        brackets = [r"\[|\]|\(|\)|\{|\}"]
-        all_patterns = "|".join(numbers + ops + brackets)
 
-        for match in re.compile(all_patterns, re.IGNORECASE).finditer(self._input):
+        for match in self._tokens_re.finditer(self._input):
             s = match[0]
             token = None
             if s[0] in ".0123456789abcdefABCDEF":
@@ -69,32 +94,8 @@ class Calc:
                     token = float(s)
                     if token.is_integer():
                         token = int(token)
-            elif s == "[":
-                token = Bracket.S_OPEN
-            elif s == "(":
-                token = Bracket.P_OPEN
-            elif s == "{":
-                token = Bracket.C_OPEN
-            elif s == "]":
-                token = Bracket.S_CLOSE
-            elif s == ")":
-                token = Bracket.P_CLOSE
-            elif s == "}":
-                token = Bracket.C_CLOSE
-            elif s == "+":
-                token = Op.ADD
-            elif s == "-":
-                token = Op.SUB
-            elif s == "*":
-                token = Op.MULT
-            elif s == "/":
-                token = Op.DIV
-            elif s == "//":
-                token = Op.DIV_INT
-            elif s == "%":
-                token = Op.MOD
-            elif s == "**":
-                token = Op.EXP
+            elif s in self._sym_tokens:
+                token = self._sym_tokens[s]
             else:
                 raise ValueError(
                     f"Unrecognized token: {s} between {match.start()} and {match.end()}"
