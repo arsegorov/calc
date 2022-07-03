@@ -8,95 +8,114 @@ def test_float_wo_exp(calc_instance: Calc):
     calc_instance._tokenize()
     assert calc_instance._tokens == [(1.2, 0, 3)]
 
+
 def test_float_w_exp(calc_instance: Calc):
     calc_instance.input = "0.12e1"
     calc_instance._tokenize()
     assert calc_instance._tokens == [(1.2, 0, 6)]
+
 
 def test_float_w_exp_negative(calc_instance: Calc):
     calc_instance.input = "1.2e-1"
     calc_instance._tokenize()
     assert calc_instance._tokens == [(0.12, 0, 6)]
 
+
 def test_float_w_exp_positive(calc_instance: Calc):
     calc_instance.input = ".12e+1"
     calc_instance._tokenize()
     assert calc_instance._tokens == [(1.2, 0, 6)]
+
 
 def test_float_w_exp_upper(calc_instance: Calc):
     calc_instance.input = "1.2E-1"
     calc_instance._tokenize()
     assert calc_instance._tokens == [(0.12, 0, 6)]
 
+
 def test_float_is_int_wo_exp(calc_instance: Calc):
     calc_instance.input = "12."
     calc_instance._tokenize()
     assert calc_instance._tokens == [(12, 0, 3)]
+
 
 def test_float_is_int_w_exp(calc_instance: Calc):
     calc_instance.input = "1.2e2"
     calc_instance._tokenize()
     assert calc_instance._tokens == [(120, 0, 5)]
 
+
 def test_float_only_decimal_part(calc_instance: Calc):
     calc_instance.input = ".2"
     calc_instance._tokenize()
     assert calc_instance._tokens == [(0.2, 0, 2)]
+
 
 def test_float_only_decimal_point(calc_instance: Calc):
     with pytest.raises(ValueError, match=r"unexpected text at character 1: '\.'"):
         calc_instance.input = "."
         calc_instance._tokenize()
 
+
 def test_dec_int(calc_instance: Calc):
     calc_instance.input = "12"
     calc_instance._tokenize()
     assert calc_instance._tokens == [(12, 0, 2)]
+
 
 def test_bin(calc_instance: Calc):
     calc_instance.input = "0b11"
     calc_instance._tokenize()
     assert calc_instance._tokens == [(3, 0, 4)]
 
+
 def test_bin_invalid(calc_instance: Calc):
     with pytest.raises(ValueError, match=r"invalid literal for int\(\) with base 2"):
         calc_instance.input = "0b12"
         calc_instance._tokenize()
+
 
 def test_oct(calc_instance: Calc):
     calc_instance.input = "0o17"
     calc_instance._tokenize()
     assert calc_instance._tokens == [(15, 0, 4)]
 
+
 def test_oct_invalid(calc_instance: Calc):
     with pytest.raises(ValueError, match=r"invalid literal for int\(\) with base 8"):
         calc_instance.input = "0o19"
         calc_instance._tokenize()
+
 
 def test_oct_w_exp_invalid(calc_instance: Calc):
     with pytest.raises(ValueError, match=r"invalid literal for int\(\) with base 8"):
         calc_instance.input = "0o77E+1"
         calc_instance._tokenize()
 
+
 def test_hex(calc_instance: Calc):
     calc_instance.input = "0xff"
     calc_instance._tokenize()
     assert calc_instance._tokens == [(255, 0, 4)]
+
 
 def test_hex_invalid(calc_instance: Calc):
     with pytest.raises(ValueError, match=r"invalid literal for int\(\) with base 16"):
         calc_instance.input = "0xfg"
         calc_instance._tokenize()
 
+
 def test_dec_int_w_exp(calc_instance: Calc):
     calc_instance.input = "12e1"
     calc_instance._tokenize()
     assert calc_instance._tokens == [(120, 0, 4)]
 
+
 def test_dec_int_w_exp_negative(calc_instance: Calc):
     calc_instance.input = "12e-1"
     calc_instance._tokenize()
     assert calc_instance._tokens == [(1.2, 0, 5)]
+
 
 def test_ops(calc_instance: Calc):
     calc_instance.input = "+ - * ** / // %"
@@ -111,6 +130,7 @@ def test_ops(calc_instance: Calc):
         (Op.MOD, 14, 15),
     ]
 
+
 def test_brackets(calc_instance: Calc):
     calc_instance.input = "()[]{}"
     calc_instance._tokenize()
@@ -122,6 +142,7 @@ def test_brackets(calc_instance: Calc):
         (Bracket.C_OPEN, 4, 5),
         (Bracket.C_CLOSE, 5, 6),
     ]
+
 
 def test_integration(calc_instance: Calc):
     calc_instance.input = "2/[12 - 4*(1.2E-3 ** 0.5)]"

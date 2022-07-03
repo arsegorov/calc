@@ -12,6 +12,7 @@ def test_initial_input(s):
     assert calc._value is None
     assert not calc._is_evaluated
 
+
 def test_new_input(calc_instance: Calc):
     calc_instance.input = "2 + 3 * 5"
     calc_instance.result
