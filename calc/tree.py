@@ -2,9 +2,9 @@ from abc import ABC
 
 
 class Tree(ABC):
-    def __init__(self, leftTree: "Tree | None" = None, rightTree: "Tree | None" = None):
-        self._left = leftTree
-        self._right = rightTree
+    def __init__(self, left: "Tree | None" = None, right: "Tree | None" = None):
+        self._left = left
+        self._right = right
 
     @property
     def left(self):
