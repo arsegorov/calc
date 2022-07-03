@@ -11,7 +11,7 @@ class Op(Enum):
     DIV_INT = "//"
     EXP = "**"
 
-    def eval(self, lhs: Number | None, rhs: Number) -> Number:
+    def eval(self, lhs: Number | None = None, rhs: Number = 0) -> Number:
         if self.value == "+":
             return (lhs or 0) + rhs
         if self.value == "-":
