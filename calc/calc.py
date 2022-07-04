@@ -4,17 +4,13 @@ from string import digits
 from typing import List, Tuple
 
 if __name__ == "__main__":
-    from num_node import NumNode
     from op import Bracket, Op
-    from op_node import OpNode
-    from tree import Tree
     from parsed_token import Token
+    from tree import NumNode, OpNode, Tree
 else:
-    from .num_node import NumNode
     from .op import Bracket, Op
-    from .op_node import OpNode
-    from .tree import Tree
     from .parsed_token import Token
+    from .tree import NumNode, OpNode, Tree
 
 
 AnyToken = Token[Bracket] | Token[Number] | Token[Op]
