@@ -12,8 +12,8 @@ class Op(Enum):
     EXP = ("**", 2)
 
     def __init__(self, symbol, precedence):
-        self.symbol = symbol
-        self.precedence = precedence
+        self.symbol: str = symbol
+        self.precedence: int = precedence
 
     def eval(self, lhs: Number | None = None, rhs: Number = 0) -> Number:
         symbol = self.symbol
