@@ -1,4 +1,10 @@
 from calc.tree import Tree
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def ignore_abstract_methods(monkeypatch):
+    monkeypatch.setattr(Tree, "__abstractmethods__", set())
 
 
 def test_init():

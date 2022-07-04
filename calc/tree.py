@@ -25,4 +25,4 @@ class Tree(ABC):
 
     @abstractmethod
     def eval(self) -> Number:
-        pass
+        pass  # pragma: no cover
