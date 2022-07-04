@@ -121,7 +121,7 @@ class Calc:
                     (self._pl + match.start()) * " " + "^\n"
                     f"unrecognized token at character {match.start()}: '{match_text}'"
                 )
-            self._tokens.append((val, match.start(), match.end()))
+            self._tokens.append(Token(val, match.start(), match.end()))
 
             pos = match.end()
             match = regexp.search(text, pos)
@@ -142,7 +142,7 @@ class Calc:
         stack.append((group, bracket))
 
         for token in self._tokens:
-            t, start, _ = token
+            t, start = token.value, token.start
             if isinstance(t, (Number, Op)):
                 group.append(token)
             elif t in (Bracket.P_OPEN, Bracket.S_OPEN, Bracket.C_OPEN):
