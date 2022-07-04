@@ -54,17 +54,17 @@ class Calc:
             self._is_evaluated = False
 
     _numbers_patterns = [
-        # `0[b|o|x]##`
+        # 0(b|o|x)##
         r"0[box][\da-z]+",
-        # `##[.[##]][e[+|-]##]`
+        # (##[.[##]] | .##)[e[+|-]##]
         r"(?:\d+(?:\.\d*)?|\.\d+)(?:e[+\-]?\d+)?",
     ]
     _ops_pattern = [
-        # `+` | `-` | `*[*]` | `/[/]` | `%`
+        # one of: +, -, *[*], /[/], %
         r"\+|\-|\*{1,2}|\/{1,2}|\%"
     ]
     _brackets_pattern = [
-        # `[` | `]` | `(` | `)` | `{` | `}`
+        # one of: [, ], (, ), {, }
         r"[\[\]\(\)\{\}]"
     ]
     _all_patterns = "|".join(_numbers_patterns + _ops_pattern + _brackets_pattern)
