@@ -11,13 +11,9 @@ class Op(Enum):
     DIV_INT = ("//", 1)
     EXP = ("**", 2)
 
-    @property
-    def symbol(self):
-        return self.value[0]
-
-    @property
-    def precedence(self):
-        return self.value[1]
+    def __init__(self, symbol, precedence):
+        self.symbol = symbol
+        self.precedence = precedence
 
     def eval(self, lhs: Number | None = None, rhs: Number = 0) -> Number:
         symbol = self.symbol
