@@ -23,7 +23,7 @@ class Op(Enum):
             return (lhs or 0) - rhs
 
         if lhs is None:
-            raise SyntaxError(f"missing the left-hand-side for '{symbol}'")
+            raise ArithmeticError(f"missing the left-hand-side for '{symbol}'")
 
         if symbol == "*":
             return lhs * rhs
