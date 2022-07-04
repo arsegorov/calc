@@ -1,4 +1,5 @@
-from abc import ABC
+from abc import ABC, abstractmethod
+from numbers import Number
 
 
 class Tree(ABC):
@@ -21,3 +22,7 @@ class Tree(ABC):
     @right.setter
     def right(self, rightTree: "Tree | None"):
         self._right = rightTree
+
+    @abstractmethod
+    def eval(self) -> Number:
+        pass

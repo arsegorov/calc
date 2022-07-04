@@ -26,11 +26,28 @@ class OpNode(Tree):
         super().__init__(left, right)
         self.op = op
 
+    def eval(self) -> Number:
+        if not self.right:
+            raise SyntaxError(
+                f"missing the right-hand-side operand for '{self.op[0].symbol}'",
+                self.op[2],
+            )
+
+        try:
+            return self.op[0].eval(
+                self.left.eval() if self.left else None, self.right.eval()
+            )
+        except SyntaxError as se:
+            raise SyntaxError(se.args[0], self.op[2])
+
 
 class NumNode(Tree):
     def __init__(self, value: Tuple[Number, int, int]):
         super().__init__()
         self.value = value
+
+    def eval(self) -> Number:
+        return self.value[0]
 
 
 class Calc:
