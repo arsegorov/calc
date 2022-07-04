@@ -18,7 +18,7 @@ class OpNode(Tree):
     def eval(self) -> Number:
         if not self.right:
             raise SyntaxError(
-                f"missing the right-hand-side operand for '{self.token.value.symbol}'",
+                f"missing the right-hand-side for '{self.token.value.symbol}'",
                 self.token.end,
             )
 
