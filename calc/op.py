@@ -38,6 +38,31 @@ class Op(Enum):
 
         raise NotImplementedError(f"unexpected operation '{symbol}'")
 
+    def __ge__(self, other):
+        if self.__class__ is other.__class__:
+            return self.precedence >= other.precedence
+        return NotImplemented
+
+    def __gt__(self, other):
+        if self.__class__ is other.__class__:
+            return self.precedence > other.precedence
+        return NotImplemented
+
+    def __le__(self, other):
+        if self.__class__ is other.__class__:
+            return self.precedence <= other.precedence
+        return NotImplemented
+
+    def __lt__(self, other):
+        if self.__class__ is other.__class__:
+            return self.precedence < other.precedence
+        return NotImplemented
+
+    def __eq__(self, other):
+        if self.__class__ is other.__class__:
+            return self.symbol == other.symbol and self.precedence == other.precedence
+        return NotImplemented
+
 
 class Bracket(Enum):
     P_OPEN = "("
