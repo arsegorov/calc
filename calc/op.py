@@ -3,35 +3,44 @@ from numbers import Number
 
 
 class Op(Enum):
-    ADD = "+"
-    SUB = "-"
-    MULT = "*"
-    DIV = "/"
-    MOD = "%"
-    DIV_INT = "//"
-    EXP = "**"
+    ADD = ("+", 0)
+    SUB = ("-", 0)
+    MULT = ("*", 1)
+    DIV = ("/", 1)
+    MOD = ("%", 1)
+    DIV_INT = ("//", 1)
+    EXP = ("**", 2)
+
+    @property
+    def symbol(self):
+        return self.value[0]
+
+    @property
+    def precedence(self):
+        return self.value[1]
 
     def eval(self, lhs: Number | None = None, rhs: Number = 0) -> Number:
-        if self.value == "+":
+        symbol = self.symbol
+        if symbol == "+":
             return (lhs or 0) + rhs
-        if self.value == "-":
+        if symbol == "-":
             return (lhs or 0) - rhs
 
         if lhs is None:
             raise ArithmeticError(
-                f"Operator '{self.value}' requires two operands. "
+                f"Operator '{symbol}' requires two operands. "
                 f"Only the right-hand-side operand, {rhs}, was provided"
             )
 
-        if self.value == "*":
+        if symbol == "*":
             return lhs * rhs
-        if self.value == "/":
+        if symbol == "/":
             return lhs / rhs
-        if self.value == "//":
+        if symbol == "//":
             return lhs // rhs
-        if self.value == "%":
+        if symbol == "%":
             return lhs % rhs
-        if self.value == "**":
+        if symbol == "**":
             return lhs**rhs
 
 
