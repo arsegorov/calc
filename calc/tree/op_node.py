@@ -1,7 +1,7 @@
 from numbers import Number
 
+from calc.token import Token
 from op import Op
-from parsed_token import Token
 from tree import Tree
 
 

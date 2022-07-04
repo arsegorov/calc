@@ -4,12 +4,12 @@ from string import digits
 from typing import List, Tuple
 
 if __name__ == "__main__":
+    from calc.token import Token
     from op import Bracket, Op
-    from parsed_token import Token
     from tree import NumNode, OpNode, Tree
 else:
+    from calc.token import Token
     from .op import Bracket, Op
-    from .parsed_token import Token
     from .tree import NumNode, OpNode, Tree
 
 
