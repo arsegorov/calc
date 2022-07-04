@@ -154,7 +154,7 @@ class Calc:
                 stack[-1][0].append(group)
                 stack.append((group, bracket))
             elif t in (Bracket.P_CLOSE, Bracket.S_CLOSE, Bracket.C_CLOSE):
-                if not bracket or self._bracket_matching[t] != bracket[0]:
+                if not bracket or self._bracket_matching[t] != bracket.value:
                     raise SyntaxError(
                         (self._pl + start) * " " + "^\n"
                         f"unmatched '{t.value}' at {start}"
@@ -169,8 +169,8 @@ class Calc:
 
         if len(stack) > 1:
             raise SyntaxError(
-                (self._pl + bracket[1]) * " " + "^\n"
-                f"unmatched '{bracket[0].value}' at {bracket[1]}"
+                (self._pl + bracket.start) * " " + "^\n"
+                f"unmatched '{bracket.value}' at {bracket.start}"
             )
 
     def _build_tree(self):
