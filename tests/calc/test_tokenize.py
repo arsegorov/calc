@@ -52,7 +52,7 @@ def test_float_only_decimal_part(calc_instance: Calc):
 
 
 def test_float_only_decimal_point(calc_instance: Calc):
-    with pytest.raises(ValueError, match=r"unexpected text at character 1: '\.'"):
+    with pytest.raises(SyntaxError, match=r"unexpected text at 1: '\.'"):
         calc_instance.input = "."
         calc_instance._tokenize()
 

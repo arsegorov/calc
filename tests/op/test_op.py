@@ -15,45 +15,25 @@ def test_eval():
 
 
 def test_eval_mult_missing_args():
-    with pytest.raises(
-        ArithmeticError,
-        match=r"Operator '\*' requires two operands\. "
-        r"Only the right-hand-side operand, 2, was provided",
-    ):
+    with pytest.raises(SyntaxError, match=r"missing the left-hand-side for '\*'"):
         Op.MULT.eval(rhs=2)
 
 
 def test_eval_div_missing_args():
-    with pytest.raises(
-        ArithmeticError,
-        match=r"Operator '\/' requires two operands\. "
-        r"Only the right-hand-side operand, 2, was provided",
-    ):
+    with pytest.raises(SyntaxError, match=r"missing the left-hand-side for '\/'"):
         Op.DIV.eval(rhs=2)
 
 
 def test_eval_div_int_missing_args():
-    with pytest.raises(
-        ArithmeticError,
-        match=r"Operator '\/\/' requires two operands\. "
-        r"Only the right-hand-side operand, 2, was provided",
-    ):
+    with pytest.raises(SyntaxError, match=r"missing the left-hand-side for '\/\/'"):
         Op.DIV_INT.eval(rhs=2)
 
 
 def test_eval_mod_missing_args():
-    with pytest.raises(
-        ArithmeticError,
-        match=r"Operator '\%' requires two operands\. "
-        r"Only the right-hand-side operand, 2, was provided",
-    ):
+    with pytest.raises(SyntaxError, match=r"missing the left-hand-side for '\%'"):
         Op.MOD.eval(rhs=2)
 
 
 def test_eval_exp_missing_args():
-    with pytest.raises(
-        ArithmeticError,
-        match=r"Operator '\*\*' requires two operands\. "
-        r"Only the right-hand-side operand, 2, was provided",
-    ):
+    with pytest.raises(SyntaxError, match=r"missing the left-hand-side for '\*\*'"):
         Op.EXP.eval(rhs=2)
