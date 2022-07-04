@@ -1,3 +1,4 @@
+from enum import Enum
 import pytest
 from calc.op import Op
 
@@ -37,3 +38,17 @@ def test_eval_mod_missing_args():
 def test_eval_exp_missing_args():
     with pytest.raises(SyntaxError, match=r"missing the left-hand-side for '\*\*'"):
         Op.EXP.eval(rhs=2)
+
+
+def test_eval_unexpected_op():
+    class ExtendedOp(Enum):
+        CARROT = ("^", 3)
+
+        def __init__(self, symbol, precedence):
+            self.symbol = symbol
+            self.precedence = precedence
+
+    ExtendedOp.__bases__ = (Op,) + ExtendedOp.__bases__
+
+    with pytest.raises(NotImplementedError, match=r"unexpected operation '\^'"):
+        ExtendedOp.CARROT.eval(lhs=2, rhs=2)
