@@ -36,6 +36,8 @@ class Op(Enum):
         if symbol == "**":
             return lhs**rhs
 
+        raise NotImplemented(f"unexpected operation '{symbol}'")
+
 
 class Bracket(Enum):
     P_OPEN = "("
