@@ -4,11 +4,15 @@ from string import digits
 from typing import List, Tuple
 
 if __name__ == "__main__":
+    from num_node import NumNode
     from op import Bracket, Op
+    from op_node import OpNode
     from tree import Tree
     from parsed_token import Token
 else:
+    from .num_node import NumNode
     from .op import Bracket, Op
+    from .op_node import OpNode
     from .tree import Tree
     from .parsed_token import Token
 
@@ -173,8 +177,18 @@ class Calc:
         self._tokenize()
         self._group_by_brackets()
 
+        def _make_node(token_group: TokenGroup) -> Tree:
+            # TODO: implement
+            return OpNode(Token(Op.MULT, 2, 3), right=NumNode(Token(2, 4, 5)))
+
+        self._tree = _make_node(self._grouped_tokens)
+
     def _eval(self):
         self._build_tree()
+        try:
+            self._value = self._tree.eval()
+        except ArithmeticError as ae:
+            print((self._pl + ae.args[1]) * " " + "^\n" + ae.args[0])
 
     @property
     def result(self):
@@ -196,8 +210,8 @@ def main():
 
             try:
                 calc._build_tree()
-                print(f"Tokens: {[(str(t[0]), t[1], t[2]) for t in calc._tokens]}")
-                print(f"Grouped tokens: {calc._grouped_tokens}")
+                # print(f"Tokens: {[(str(t[0]), t[1], t[2]) for t in calc._tokens]}")
+                # print(f"Grouped tokens: {calc._grouped_tokens}")
                 print(f"> {calc.result}")
             except SyntaxError as se:
                 print(se)
