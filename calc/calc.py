@@ -6,55 +6,56 @@ from typing import List, Tuple
 if __name__ == "__main__":
     from op import Bracket, Op
     from tree import Tree
+    from parsed_token import Token
 else:
     from .op import Bracket, Op
     from .tree import Tree
+    from .parsed_token import Token
 
 
-Token = Tuple[Bracket | Number | Op, int, int]
-TokensList = List[Token]
-GroupedTokensList = List[Tuple[Number | Op, int, int] | "GroupedTokensList"]
+AnyToken = Token[Bracket] | Token[Number] | Token[Op]
+TokenGroup = List[Token[Number] | Token[Op] | "TokenGroup"]
 
 
 class OpNode(Tree):
     def __init__(
         self,
-        op: Tuple[Op, int, int],
+        token: Token[Op],
         left: Tree | None = None,
         right: Tree | None = None,
     ):
         super().__init__(left, right)
-        self.op = op
+        self.token = token
 
     def eval(self) -> Number:
         if not self.right:
             raise SyntaxError(
-                f"missing the right-hand-side operand for '{self.op[0].symbol}'",
-                self.op[2],
+                f"missing the right-hand-side operand for '{self.token.value.symbol}'",
+                self.token.end,
             )
 
         try:
-            return self.op[0].eval(
+            return self.token.value.eval(
                 self.left.eval() if self.left else None, self.right.eval()
             )
         except SyntaxError as se:
-            raise SyntaxError(se.args[0], self.op[2])
+            raise SyntaxError(se.args[0], self.token.end)
 
 
 class NumNode(Tree):
-    def __init__(self, value: Tuple[Number, int, int]):
+    def __init__(self, token: Token[Number]):
         super().__init__()
-        self.value = value
+        self.token = token
 
     def eval(self) -> Number:
-        return self.value[0]
+        return self.token.value
 
 
 class Calc:
     def __init__(self, input_string: str = "", prompt_length: int = 34):
         self._input = input_string
-        self._tokens: TokensList = []
-        self._grouped_tokens: GroupedTokensList = []
+        self._tokens: List[AnyToken] = []
+        self._grouped_tokens: TokenGroup = []
         self._tree: Tree | None = None
         self._value: Number | None = None
         self._is_evaluated = False
@@ -171,7 +172,7 @@ class Calc:
         self._grouped_tokens = []
         group, bracket = self._grouped_tokens, None
 
-        stack: List[Tuple[GroupedTokensList, Token]] = []
+        stack: List[Tuple[TokenGroup, Token[Bracket]]] = []
         stack.append((group, bracket))
 
         for token in self._tokens:
