@@ -149,20 +149,23 @@ class Calc:
             t, start, _ = token
             if isinstance(t, (Number, Op)):
                 group.append(token)
+            elif t in (Bracket.P_OPEN, Bracket.S_OPEN, Bracket.C_OPEN):
+                group, bracket = [], token
+                stack[-1][0].append(group)
+                stack.append((group, bracket))
+            elif t in (Bracket.P_CLOSE, Bracket.S_CLOSE, Bracket.C_CLOSE):
+                if not bracket or self._bracket_matching[t] != bracket[0]:
+                    raise SyntaxError(
+                        (34 + start) * " " + "^\n"
+                        f"unmatched '{t.value}' at {start}"
+                    )
+                else:
+                    stack.pop()
+                    group, bracket = stack[-1]
             else:
-                if t in (Bracket.P_OPEN, Bracket.S_OPEN, Bracket.C_OPEN):
-                    group, bracket = [], token
-                    stack[-1][0].append(group)
-                    stack.append((group, bracket))
-                else:  # Bracket.P_CLOSE | Bracket.S_CLOSE | Bracket.C_CLOSE
-                    if not bracket or self._bracket_matching[t] != bracket[0]:
-                        raise SyntaxError(
-                            (34 + start) * " " + "^\n"
-                            f"unmatched '{t.value}' at {start}"
-                        )
-                    else:
-                        stack.pop()
-                        group, bracket = stack[-1]
+                raise NotImplementedError(
+                    (34 + start) * " " + "^\n" f"unexpected token at {start}"
+                )
 
         if len(stack) > 1:
             raise SyntaxError(
