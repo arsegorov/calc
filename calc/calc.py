@@ -31,13 +31,14 @@ class NumNode(Tree):
 
 
 class Calc:
-    def __init__(self, input_string: str = ""):
+    def __init__(self, input_string: str = "", prompt_length: int = 34):
         self._input = input_string
         self._tokens: TokensList = []
         self._grouped_tokens: GroupedTokensList = []
         self._tree: Tree | None = None
         self._value: Number | None = None
         self._is_evaluated = False
+        self._pl = prompt_length
 
     @property
     def input(self):
@@ -52,6 +53,14 @@ class Calc:
             self._tree = None
             self._value = None
             self._is_evaluated = False
+
+    @property
+    def prompt_length(self):
+        return self._pl
+
+    @prompt_length.setter
+    def prompt_length(self, new_prompt_length: int):
+        self._pl = new_prompt_length
 
     _numbers_patterns = [
         # 0(b|o|x)##
@@ -95,7 +104,7 @@ class Calc:
             invalid_text_match = self._non_whitespace_re.search(gap_text)
             if invalid_text_match:
                 raise SyntaxError(
-                    (34 + pos + invalid_text_match.start()) * " " + "^\n"
+                    (self._pl + pos + invalid_text_match.start()) * " " + "^\n"
                     f"unexpected text at {pos + invalid_text_match.start() + 1}: "
                     f"'{invalid_text_match[0]}'"
                 )
@@ -122,7 +131,7 @@ class Calc:
                 val = self._sym_tokens[match_text]
             else:
                 raise NotImplementedError(
-                    (34 + match.start()) * " " + "^\n"
+                    (self._pl + match.start()) * " " + "^\n"
                     f"unrecognized token at character {match.start()}: '{match_text}'"
                 )
             self._tokens.append((val, match.start(), match.end()))
@@ -156,7 +165,7 @@ class Calc:
             elif t in (Bracket.P_CLOSE, Bracket.S_CLOSE, Bracket.C_CLOSE):
                 if not bracket or self._bracket_matching[t] != bracket[0]:
                     raise SyntaxError(
-                        (34 + start) * " " + "^\n"
+                        (self._pl + start) * " " + "^\n"
                         f"unmatched '{t.value}' at {start}"
                     )
                 else:
@@ -164,12 +173,12 @@ class Calc:
                     group, bracket = stack[-1]
             else:
                 raise NotImplementedError(
-                    (34 + start) * " " + "^\n" f"unexpected token at {start}"
+                    (self._pl + start) * " " + "^\n" f"unexpected token at {start}"
                 )
 
         if len(stack) > 1:
             raise SyntaxError(
-                (34 + bracket[1]) * " " + "^\n"
+                (self._pl + bracket[1]) * " " + "^\n"
                 f"unmatched '{bracket[0].value}' at {bracket[1]}"
             )
 
