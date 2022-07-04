@@ -18,16 +18,19 @@ GroupedTokensList = List[Tuple[Number | Op, int, int] | "GroupedTokensList"]
 
 class OpNode(Tree):
     def __init__(
-        self, op: Op, leftTree: "Tree | None" = None, rightTree: "Tree | None" = None
+        self,
+        op: Tuple[Op, int, int],
+        left: Tree | None = None,
+        right: Tree | None = None,
     ):
-        super().__init__(leftTree, rightTree)
-        self._op = op
+        super().__init__(left, right)
+        self.op = op
 
 
 class NumNode(Tree):
-    def __init__(self, value: Number):
+    def __init__(self, value: Tuple[Number, int, int]):
         super().__init__()
-        self._value = value
+        self.value = value
 
 
 class Calc:
