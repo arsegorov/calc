@@ -2,18 +2,17 @@ from calc.calc import Calc
 
 
 def _main():
-    prompt = "Input the expression to evaluate: "
-    calc = Calc(prompt_length=len(prompt))
+    calc = Calc()
     try:
-        s = input(prompt)
-        while s:
-            calc.input = s
+        calc.read_input()
+        while calc.input:
             try:
                 print(f"> {calc.result}")
             except SyntaxError as se:
                 print(se)
 
-            s = input(f"\n{prompt}")
+            print()
+            calc.read_input()
         else:
             print("quit")
     except EOFError:

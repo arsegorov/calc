@@ -14,14 +14,25 @@ TokenGroup = List[Token[Number] | Token[Op] | "TokenGroup"]
 
 
 class Calc:
-    def __init__(self, input_string: str = "", prompt_length: int = 34):
+    def __init__(self, prompt: str = "Type an expression: ", input_string: str = ""):
         self._input = input_string
         self._tokens: List[AnyToken] = []
         self._grouped_tokens: TokenGroup = []
         self._tree: Tree | None = None
         self._value: Number | None = None
         self._is_evaluated = False
-        self._pl = prompt_length
+        self._prompt: str = prompt
+        self._pl: int = len(prompt)
+
+    def read_input(self):
+        input_string = input(self._prompt)
+        if input_string != self._input:
+            self._input = input_string
+            self._tokens = []
+            self._grouped_tokens = []
+            self._tree = None
+            self._value = None
+            self._is_evaluated = False
 
     @property
     def input(self):
@@ -41,9 +52,14 @@ class Calc:
     def prompt_length(self):
         return self._pl
 
-    @prompt_length.setter
-    def prompt_length(self, new_prompt_length: int):
-        self._pl = new_prompt_length
+    @property
+    def prompt(self):
+        return self._prompt
+
+    @prompt.setter
+    def prompt(self, new_prompt: str):
+        self._prompt = new_prompt
+        self._pl = len(new_prompt)
 
     _numbers_patterns = [
         # 0(b|o|x)##

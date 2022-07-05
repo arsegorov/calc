@@ -5,7 +5,7 @@ from calc.calc import Calc
 
 @given(st.text(max_size=10))
 def test_initial_input(s):
-    calc = Calc(s)
+    calc = Calc(input_string=s)
     assert calc._input == s
     assert calc._tokens == []
     assert calc._tree is None
