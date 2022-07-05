@@ -201,18 +201,14 @@ class Calc:
 
     @staticmethod
     def _put_op(tree: Tree | None, item: Token[Op], is_unary: bool = False) -> Tree:
-        if tree is None:
-            return OpNode(item)
-
-        if isinstance(tree, NumNode):
-            return OpNode(item, left=tree)
-
-        if isinstance(tree, OpNode):
-            if tree.token < item or is_unary:
+        match tree:
+            case None:
+                return OpNode(item)
+            case OpNode() if tree.token < item or is_unary:
                 tree.right = Calc._put_op(tree.right, item, is_unary)
-            else:
-                tree = OpNode(item, left=tree)
-            return tree
+                return tree
+            case _:
+                return OpNode(item, left=tree)
 
     @staticmethod
     def _make_node(token_group: TokenGroup) -> Tree:
