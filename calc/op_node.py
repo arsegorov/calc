@@ -27,4 +27,7 @@ class OpNode(Tree):
                 self.left.eval() if self.left else None, self.right.eval()
             )
         except ArithmeticError as ae:
-            raise ArithmeticError(ae.args[0], self.token.start)
+            if len(ae.args) > 1:
+                raise
+            else:
+                raise ArithmeticError(ae.args[0], self.token.start)
