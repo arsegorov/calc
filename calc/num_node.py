@@ -1,7 +1,7 @@
 from numbers import Number
 
-from input_token import Token
-from tree import Tree
+from .input_token import Token
+from .tree import Tree
 
 
 class NumNode(Tree):

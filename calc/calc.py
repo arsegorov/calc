@@ -3,19 +3,11 @@ from numbers import Number
 from string import digits
 from typing import List, Tuple
 
-if __name__ == "__main__":
-    from input_token import Token
-    from num_node import NumNode
-    from op import Bracket, Op
-    from op_node import OpNode
-    from tree import Tree
-else:
-    from .input_token import Token
-    from .num_node import NumNode
-    from .op import Bracket, Op
-    from .op_node import OpNode
-    from .tree import Tree
-
+from .input_token import Token
+from .num_node import NumNode
+from .op import Bracket, Op
+from .op_node import OpNode
+from .tree import Tree
 
 AnyToken = Token[Bracket] | Token[Number] | Token[Op]
 TokenGroup = List[Token[Number] | Token[Op] | "TokenGroup"]
@@ -238,26 +230,3 @@ class Calc:
         if not self._is_evaluated:
             self._eval()
         return self._value
-
-
-def main():
-    prompt = "Input the expression to evaluate: "
-    calc = Calc(prompt_length=len(prompt))
-    try:
-        s = input(prompt)
-        while s:
-            calc.input = s
-            try:
-                print(f"> {calc.result}")
-            except SyntaxError as se:
-                print(se)
-
-            s = input(f"\n{prompt}")
-        else:
-            print("quit")
-    except EOFError:
-        print("quit")
-
-
-if __name__ == "__main__":
-    main()
