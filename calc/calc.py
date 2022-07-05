@@ -155,26 +155,31 @@ class Calc:
         stack.append((group, bracket))
 
         for token in self._tokens:
-            t, start = token.value, token.start
-            if isinstance(t, Number | Op):
-                group.append(token)
-            elif t in (Bracket.P_OPEN, Bracket.S_OPEN, Bracket.C_OPEN):
-                group, bracket = [], token
-                stack[-1][0].append(group)
-                stack.append((group, bracket))
-            elif t in (Bracket.P_CLOSE, Bracket.S_CLOSE, Bracket.C_CLOSE):
-                if not bracket or self._bracket_matching[t] != bracket.value:
-                    raise SyntaxError(
-                        (self._pl + start) * " " + "^\n"
-                        f"unmatched '{t.value}' at {start}"
-                    )
-                else:
+            tok_val, tok_start = token.value, token.start
+            match tok_val:
+                case Op() | Number():
+                    group.append(token)
+
+                case Bracket.P_OPEN | Bracket.S_OPEN | Bracket.C_OPEN:
+                    group.append([])
+                    group, bracket = group[-1], token
+                    stack.append((group, bracket))
+
+                case Bracket.P_CLOSE | Bracket.S_CLOSE | Bracket.C_CLOSE:
+                    if not bracket or self._bracket_matching[tok_val] != bracket.value:
+                        raise SyntaxError(
+                            (self._pl + tok_start) * " " + "^\n"
+                            f"unmatched '{tok_val.value}' at {tok_start}"
+                        )
+
                     stack.pop()
                     group, bracket = stack[-1]
-            else:
-                raise NotImplementedError(
-                    (self._pl + start) * " " + "^\n" f"unexpected token at {start}"
-                )
+
+                case _:
+                    raise NotImplementedError(
+                        (self._pl + tok_start) * " " + "^\n"
+                        f"unexpected token '{tok_val}' at {tok_start}"
+                    )
 
         if bracket:
             raise SyntaxError(
