@@ -156,7 +156,7 @@ class Calc:
 
         for token in self._tokens:
             t, start = token.value, token.start
-            if isinstance(t, (Number, Op)):
+            if isinstance(t, Number | Op):
                 group.append(token)
             elif t in (Bracket.P_OPEN, Bracket.S_OPEN, Bracket.C_OPEN):
                 group, bracket = [], token
