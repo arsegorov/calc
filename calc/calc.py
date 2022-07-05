@@ -218,12 +218,13 @@ class Calc:
             is_unary_op = True
 
             for item in token_group:
-                if isinstance(item, Token) and isinstance(item.value, Number):
-                    res = _put_num(res, item)
-                    is_unary_op = False
-                elif isinstance(item, Token) and isinstance(item.value, Op):
-                    res = _put_op(res, item, is_unary_op)
-                    is_unary_op = True
+                if isinstance(item, Token):
+                    if isinstance(item.value, Number):
+                        res = _put_num(res, item)
+                        is_unary_op = False
+                    elif isinstance(item.value, Op):
+                        res = _put_op(res, item, is_unary_op)
+                        is_unary_op = True
                 else:
                     res = _put_num(res, _make_node(item))
 
