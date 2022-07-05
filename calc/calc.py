@@ -241,24 +241,18 @@ class Calc:
 
 
 def main():
-    from json import dumps
-    from pprint import pprint
-
-    calc = Calc()
+    prompt = "Input the expression to evaluate: "
+    calc = Calc(prompt_length=len(prompt))
     try:
-        s = input("Input the expression to evaluate: ").strip()
+        s = input(prompt)
         while s:
             calc.input = s
-
             try:
-                calc._build_tree()
-                # print(f"Tokens: {[(str(t[0]), t[1], t[2]) for t in calc._tokens]}")
-                # print(f"Grouped tokens: {calc._grouped_tokens}")
                 print(f"> {calc.result}")
             except SyntaxError as se:
                 print(se)
 
-            s = input("\nInput the expression to evaluate: ").strip()
+            s = input(f"\n{prompt}")
         else:
             print("quit")
     except EOFError:
