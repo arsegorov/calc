@@ -179,7 +179,7 @@ class Calc:
         if bracket:
             raise SyntaxError(
                 (self._pl + bracket.start) * " " + "^\n"
-                f"unmatched '{bracket.value}' at {bracket.start}"
+                f"unmatched '{bracket.value.value}' at {bracket.start}"
             )
 
     @staticmethod
