@@ -188,57 +188,59 @@ class Calc:
             )
 
     @staticmethod
-    def _put_num(tree: Tree | None, item: Token[Number] | Tree) -> Tree:
+    def _put_num(root: Tree | None, item: Token[Number] | Tree) -> Tree:
         new_node = (
             GroupNode(item.token, item.left, item.right)
             if isinstance(item, Tree)
             else NumNode(item)
         )
 
-        if tree is None:
+        if root is None:
             return new_node
 
-        node = tree
+        node = root
         while node.right:
             node = node.right
         node.right = new_node
 
-        return tree
+        return root
 
     @staticmethod
-    def _put_op(tree: Tree | None, item: Token[Op], is_unary: bool = False) -> Tree:
-        match tree:
+    def _put_op(
+        root: Tree | None, new_op_token: Token[Op], new_op_is_unary: bool = False
+    ) -> Tree:
+        match root:
             case None:
-                return OpNode(item)
-            case OpNode() if not isinstance(tree, GroupNode) and (
-                tree.token < item or is_unary
+                return OpNode(new_op_token)
+            case OpNode() if not isinstance(root, GroupNode) and (
+                root.token < new_op_token or new_op_is_unary
             ):
                 # If the new op has higher precedence than the root op,
                 #  it sinks into the right branch
-                tree.right = Calc._put_op(tree.right, item, is_unary)
-                return tree
+                root.right = Calc._put_op(root.right, new_op_token, new_op_is_unary)
+                return root
             case _:
                 # All other ops become the new root
                 #  with the old tree on the left
-                return OpNode(item, left=tree)
+                return OpNode(new_op_token, left=root)
 
     @staticmethod
     def _make_node(token_group: TokenGroup) -> Tree:
-        res: Tree | None = None
-        is_unary_op = True
+        root: Tree | None = None
+        left_is_op = True
 
         for item in token_group:
             match item:
                 case Token() if isinstance(item.value, Number):
-                    res = Calc._put_num(res, item)
-                    is_unary_op = False
+                    root = Calc._put_num(root, item)
+                    left_is_op = False
                 case Token() if isinstance(item.value, Op):
-                    res = Calc._put_op(res, item, is_unary_op)
-                    is_unary_op = True
+                    root = Calc._put_op(root, item, new_op_is_unary=left_is_op)
+                    left_is_op = True
                 case list():  # TokenGroup
-                    res = Calc._put_num(res, Calc._make_node(item))
+                    root = Calc._put_num(root, Calc._make_node(item))
 
-        return res
+        return root
 
     def _build_tree(self):
         self._tokenize()
