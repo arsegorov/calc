@@ -220,15 +220,15 @@ class Calc:
         is_unary_op = True
 
         for item in token_group:
-            if isinstance(item, Token):
-                if isinstance(item.value, Number):
+            match item:
+                case Token() if isinstance(item.value, Number):
                     res = Calc._put_num(res, item)
                     is_unary_op = False
-                elif isinstance(item.value, Op):
+                case Token() if isinstance(item.value, Op):
                     res = Calc._put_op(res, item, is_unary_op)
                     is_unary_op = True
-            else:
-                res = Calc._put_num(res, Calc._make_node(item))
+                case list():  # TokenGroup
+                    res = Calc._put_num(res, Calc._make_node(item))
 
         return res
 
