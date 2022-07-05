@@ -229,6 +229,7 @@ class Calc:
         self._build_tree()
         try:
             self._value = self._tree.eval()
+            self._is_evaluated = True
         except ArithmeticError as ae:
             print((self._pl + ae.args[1]) * " " + "^\n" + ae.args[0])
 
@@ -236,7 +237,6 @@ class Calc:
     def result(self):
         if not self._is_evaluated:
             self._eval()
-            self._is_evaluated = True
         return self._value
 
 
