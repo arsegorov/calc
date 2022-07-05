@@ -189,13 +189,15 @@ class Calc:
 
     @staticmethod
     def _put_num(tree: Tree | None, item: Token[Number] | Tree) -> Tree:
+        new_node = item if isinstance(item, Tree) else NumNode(item)
+
         if tree is None:
-            return item if isinstance(item, Tree) else NumNode(item)
+            return new_node
 
         node = tree
         while node.right:
             node = node.right
-        node.right = item if isinstance(item, Tree) else NumNode(item)
+        node.right = new_node
 
         return tree
 
