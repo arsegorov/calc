@@ -176,7 +176,7 @@ class Calc:
                     (self._pl + start) * " " + "^\n" f"unexpected token at {start}"
                 )
 
-        if len(stack) > 1:
+        if bracket:
             raise SyntaxError(
                 (self._pl + bracket.start) * " " + "^\n"
                 f"unmatched '{bracket.value}' at {bracket.start}"
