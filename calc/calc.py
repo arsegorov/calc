@@ -182,55 +182,56 @@ class Calc:
                 f"unmatched '{bracket.value}' at {bracket.start}"
             )
 
+    @staticmethod
+    def _put_num(tree: Tree | None, item: Token[Number] | Tree) -> Tree:
+        if tree is None:
+            return item if isinstance(item, Tree) else NumNode(item)
+
+        node = tree
+        while node.right:
+            node = node.right
+        node.right = item if isinstance(item, Tree) else NumNode(item)
+
+        return tree
+
+    @staticmethod
+    def _put_op(tree: Tree | None, item: Token[Op], is_unary: bool = False) -> Tree:
+        if tree is None:
+            return OpNode(item)
+
+        if isinstance(tree, NumNode):
+            return OpNode(item, left=tree)
+
+        if isinstance(tree, OpNode):
+            if tree.token < item or is_unary:
+                tree.right = Calc._put_op(tree.right, item, is_unary)
+            else:
+                tree = OpNode(item, left=tree)
+            return tree
+
+    @staticmethod
+    def _make_node(token_group: TokenGroup) -> Tree:
+        res: Tree | None = None
+        is_unary_op = True
+
+        for item in token_group:
+            if isinstance(item, Token):
+                if isinstance(item.value, Number):
+                    res = Calc._put_num(res, item)
+                    is_unary_op = False
+                elif isinstance(item.value, Op):
+                    res = Calc._put_op(res, item, is_unary_op)
+                    is_unary_op = True
+            else:
+                res = Calc._put_num(res, Calc._make_node(item))
+
+        return res
+
     def _build_tree(self):
         self._tokenize()
         self._group_by_brackets()
 
-        def _make_node(token_group: TokenGroup) -> Tree:
-            def _put_num(tree: Tree | None, item: Token[Number] | Tree) -> Tree:
-                if tree is None:
-                    return item if isinstance(item, Tree) else NumNode(item)
-
-                node = tree
-                while node.right:
-                    node = node.right
-                node.right = item if isinstance(item, Tree) else NumNode(item)
-
-                return tree
-
-            def _put_op(
-                tree: Tree | None, item: Token[Op], is_unary: bool = False
-            ) -> Tree:
-                if tree is None:
-                    return OpNode(item)
-
-                if isinstance(tree, NumNode):
-                    return OpNode(item, left=tree)
-
-                if isinstance(tree, OpNode):
-                    if tree.token < item or is_unary:
-                        tree.right = _put_op(tree.right, item, is_unary)
-                    else:
-                        tree = OpNode(item, left=tree)
-                    return tree
-
-            res: Tree | None = None
-            is_unary_op = True
-
-            for item in token_group:
-                if isinstance(item, Token):
-                    if isinstance(item.value, Number):
-                        res = _put_num(res, item)
-                        is_unary_op = False
-                    elif isinstance(item.value, Op):
-                        res = _put_op(res, item, is_unary_op)
-                        is_unary_op = True
-                else:
-                    res = _put_num(res, _make_node(item))
-
-            return res
-
-        self._tree = _make_node(self._grouped_tokens)
+        self._tree = self._make_node(self._grouped_tokens)
 
     def _eval(self):
         self._build_tree()
