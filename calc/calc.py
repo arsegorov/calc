@@ -5,7 +5,7 @@ from typing import List, Tuple
 
 from .input_token import Token
 from .op import Bracket, Op
-from .tree import NumNode, OpNode, Tree
+from .tree import GroupNode, NumNode, OpNode, Tree
 
 AnyToken = Token[Bracket] | Token[Number] | Token[Op]
 TokenGroup = List[Token[Number] | Token[Op] | "TokenGroup"]
@@ -189,7 +189,11 @@ class Calc:
 
     @staticmethod
     def _put_num(tree: Tree | None, item: Token[Number] | Tree) -> Tree:
-        new_node = item if isinstance(item, Tree) else NumNode(item)
+        new_node = (
+            GroupNode(item.token, item.left, item.right)
+            if isinstance(item, Tree)
+            else NumNode(item)
+        )
 
         if tree is None:
             return new_node
@@ -206,10 +210,16 @@ class Calc:
         match tree:
             case None:
                 return OpNode(item)
-            case OpNode() if tree.token < item or is_unary:
+            case OpNode() if not isinstance(tree, GroupNode) and (
+                tree.token < item or is_unary
+            ):
+                # If the new op has higher precedence than the root op,
+                #  it sinks into the right branch
                 tree.right = Calc._put_op(tree.right, item, is_unary)
                 return tree
             case _:
+                # All other ops become the new root
+                #  with the old tree on the left
                 return OpNode(item, left=tree)
 
     @staticmethod

@@ -31,3 +31,7 @@ class OpNode(Tree):
                 raise
             else:
                 raise ArithmeticError(ae.args[0], self.token.start)
+
+
+class GroupNode(OpNode):
+    pass
