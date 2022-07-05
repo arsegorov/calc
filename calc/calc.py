@@ -248,6 +248,10 @@ class Calc:
 
     def _eval(self):
         self._build_tree()
+
+        if not self._tree:
+            return
+
         try:
             self._value = self._tree.eval()
             self._is_evaluated = True
