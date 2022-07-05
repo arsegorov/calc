@@ -4,10 +4,8 @@ from string import digits
 from typing import List, Tuple
 
 from .input_token import Token
-from .num_node import NumNode
 from .op import Bracket, Op
-from .op_node import OpNode
-from .tree import Tree
+from .tree import NumNode, OpNode, Tree
 
 AnyToken = Token[Bracket] | Token[Number] | Token[Op]
 TokenGroup = List[Token[Number] | Token[Op] | "TokenGroup"]
