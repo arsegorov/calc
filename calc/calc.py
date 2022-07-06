@@ -24,23 +24,26 @@ def _put_value(root: Tree | None, new_node: NumNode | GroupNode) -> Tree:
 
 
 def _put_op(root: Tree | None, new_node: OpNode, unary: bool = False) -> Tree:
-    match root:
-        case None:
-            return new_node
-        # If the new operation (incl. unary)
-        #  has a higher precedence than the root operation,
-        #  the new operation is part of the root's right operand
-        # But a group has a higher precedence than any operation
-        case OpNode() if (new_node.token > root.token or unary) and not isinstance(
-            root, GroupNode
-        ):
-            root.right = _put_op(root.right, new_node, unary)
-            return root
-        # Otherwise, the entire expression on the left
-        #  becomes the operation's left operand
-        case _:
-            new_node.left = root
-            return new_node
+    if not root:
+        return new_node
+
+    # If the new operation has a higher precedence than the root
+    #  (unary operations have a higher precedence than binary,
+    #   groups have a higher precedence than any operation),
+    # then the new operation is part of the root's right-hand side
+    if (
+        # checks that root is an OpNode, but not a GroupNode
+        type(root) is OpNode
+        and (new_node.token > root.token or unary)
+    ):
+        root.right = _put_op(root.right, new_node, unary)
+        return root
+
+    # Otherwise, the entire expression
+    #  on the left of the new operation
+    #  is its left-hand side
+    new_node.left = root
+    return new_node
 
 
 def _make_node(token_group: TokenGroup) -> Tree:
@@ -48,19 +51,18 @@ def _make_node(token_group: TokenGroup) -> Tree:
     prev_is_value = False
 
     for item in token_group:
-        match item:
-            # Token[Op]
-            case Token() if isinstance(item.value, Op):
-                root = _put_op(root, OpNode(item), unary=not prev_is_value)
-                prev_is_value = False
-            # Token[Number] | TokenGroup
-            case _:
-                new_node = _make_node(item) if isinstance(item, list) else NumNode(item)
-                if isinstance(new_node, OpNode):
-                    new_node.__class__ = GroupNode
+        # Token[Op]
+        if isinstance(item, Token) and isinstance(item.value, Op):
+            root = _put_op(root, OpNode(item), unary=not prev_is_value)
+            prev_is_value = False
+        # Token[Number] | TokenGroup
+        else:
+            new_node = _make_node(item) if isinstance(item, list) else NumNode(item)
+            if isinstance(new_node, OpNode):
+                new_node.__class__ = GroupNode
 
-                root = _put_value(root, new_node)
-                prev_is_value = True
+            root = _put_value(root, new_node)
+            prev_is_value = True
 
     return root
 
