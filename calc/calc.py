@@ -11,6 +11,60 @@ AnyToken = Token[Bracket] | Token[Number] | Token[Op]
 TokenGroup = List[Token[Number] | Token[Op] | "TokenGroup"]
 
 
+def _put_value(root: Tree | None, new_node: NumNode | GroupNode) -> Tree:
+    if root is None:
+        return new_node
+
+    rightmost_node = root
+    while rightmost_node.right:
+        rightmost_node = rightmost_node.right
+    rightmost_node.right = new_node
+
+    return root
+
+
+def _put_op(root: Tree | None, new_node: OpNode, unary: bool = False) -> Tree:
+    match root:
+        case None:
+            return new_node
+        # If the new operation (incl. unary)
+        #  has a higher precedence than the root operation,
+        #  the new operation is part of the root's right operand
+        # But a group has a higher precedence than any operation
+        case OpNode() if (new_node.token > root.token or unary) and not isinstance(
+            root, GroupNode
+        ):
+            root.right = _put_op(root.right, new_node, unary)
+            return root
+        # Otherwise, the entire expression on the left
+        #  becomes the operation's left operand
+        case _:
+            new_node.left = root
+            return new_node
+
+
+def _make_node(token_group: TokenGroup) -> Tree:
+    root: Tree | None = None
+    prev_is_value = False
+
+    for item in token_group:
+        match item:
+            # Token[Op]
+            case Token() if isinstance(item.value, Op):
+                root = _put_op(root, OpNode(item), unary=not prev_is_value)
+                prev_is_value = False
+            # Token[Number] | TokenGroup
+            case _:
+                new_node = _make_node(item) if isinstance(item, list) else NumNode(item)
+                if isinstance(new_node, OpNode):
+                    new_node.__class__ = GroupNode
+
+                root = _put_value(root, new_node)
+                prev_is_value = True
+
+    return root
+
+
 class Calc:
     def __init__(self, prompt: str = "Type an expression: ", input_string: str = ""):
         self._input = input_string
@@ -187,69 +241,11 @@ class Calc:
                 f"unmatched '{bracket.value.value}' at {bracket.start}"
             )
 
-    @staticmethod
-    def _put_value(root: Tree | None, new_node: Tree) -> Tree:
-        if root is None:
-            return new_node
-
-        rightmost_node = root
-        while rightmost_node.right:
-            rightmost_node = rightmost_node.right
-        rightmost_node.right = new_node
-
-        return root
-
-    @staticmethod
-    def _put_op(root: Tree | None, new_node: OpNode, unary: bool = False) -> Tree:
-        match root:
-            case None:
-                return new_node
-            # If the new operation (incl. unary)
-            #  has a higher precedence than the root operation,
-            #  the new operation is part of the root's right operand
-            # But a group has a higher precedence than any operation
-            case OpNode() if (new_node.token > root.token or unary) and not isinstance(
-                root, GroupNode
-            ):
-                root.right = Calc._put_op(root.right, new_node, unary)
-                return root
-            # Otherwise, the entire expression on the left
-            #  becomes the operation's left operand
-            case _:
-                new_node.left = root
-                return new_node
-
-    @staticmethod
-    def _make_node(token_group: TokenGroup) -> Tree:
-        root: Tree | None = None
-        prev_is_value = False
-
-        for item in token_group:
-            match item:
-                # Token[Op]
-                case Token() if isinstance(item.value, Op):
-                    root = Calc._put_op(root, OpNode(item), unary=not prev_is_value)
-                    prev_is_value = False
-                # Token[Number] | TokenGroup
-                case _:
-                    new_node = (
-                        Calc._make_node(item)
-                        if isinstance(item, list)
-                        else NumNode(item)
-                    )
-                    if isinstance(new_node, OpNode):
-                        new_node.__class__ = GroupNode
-
-                    root = Calc._put_value(root, new_node)
-                    prev_is_value = True
-
-        return root
-
     def _build_tree(self):
         self._tokenize()
         self._group_by_brackets()
 
-        self._tree = self._make_node(self._grouped_tokens)
+        self._tree = _make_node(self._grouped_tokens)
 
     def _eval(self):
         self._build_tree()
