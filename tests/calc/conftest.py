@@ -1,6 +1,6 @@
 import pytest
 
-from calc.calc import Calc
+from calc import Calc
 
 
 @pytest.fixture(scope="session")

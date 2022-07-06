@@ -1,5 +1,5 @@
 import pytest
-from calc.calc import Calc
+from calc import Calc
 from calc.op import Bracket, Op
 from calc.input_token import Token
 

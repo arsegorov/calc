@@ -1,4 +1,4 @@
-from calc.calc import Calc
+from calc import Calc
 
 
 def test_group_first(calc_instance: Calc):

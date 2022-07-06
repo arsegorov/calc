@@ -1,6 +1,6 @@
 from hypothesis import given, strategies as st
 
-from calc.calc import Calc
+from calc import Calc
 
 
 @given(st.text(max_size=10))
