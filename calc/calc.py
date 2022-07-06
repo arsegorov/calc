@@ -202,7 +202,7 @@ class Calc:
         Bracket.C_CLOSE: Bracket.C_OPEN,
     }
 
-    def _group_by_brackets(self):
+    def _group_tokens_by_brackets(self):
         self._grouped_tokens = []
 
         group, bracket = self._grouped_tokens, None
@@ -245,7 +245,7 @@ class Calc:
 
     def _build_tree(self):
         self._tokenize()
-        self._group_by_brackets()
+        self._group_tokens_by_brackets()
 
         self._tree = _make_node(self._grouped_tokens)
 
