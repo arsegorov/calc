@@ -12,16 +12,16 @@ class Tree(ABC):
         return self._left
 
     @left.setter
-    def left(self, leftTree: "Tree | None"):
-        self._left = leftTree
+    def left(self, left: "Tree | None"):
+        self._left = left
 
     @property
     def right(self):
         return self._right
 
     @right.setter
-    def right(self, rightTree: "Tree | None"):
-        self._right = rightTree
+    def right(self, right: "Tree | None"):
+        self._right = right
 
     @abstractmethod
     def eval(self) -> Number:
