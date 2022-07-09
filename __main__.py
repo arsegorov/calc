@@ -1,7 +1,7 @@
 from calc.calc import Calc
 
 
-def _main():
+def main():
     calc = Calc()
     try:
         calc.read_input()
@@ -19,5 +19,4 @@ def _main():
         print("quit")
 
 
-if __name__ == "__main__":
-    _main()
+main()
