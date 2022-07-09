@@ -1,4 +1,4 @@
-from calc.input_token import Token
+from calc.token import Token
 
 
 def test_init():

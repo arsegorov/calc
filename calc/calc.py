@@ -3,7 +3,7 @@ from numbers import Number
 from string import digits
 from typing import List, Tuple
 
-from .input_token import Token
+from .token import Token
 from .op import Bracket, Op
 from .tree import GroupNode, NumNode, OpNode, Tree
 

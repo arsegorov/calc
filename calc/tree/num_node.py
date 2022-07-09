@@ -1,6 +1,6 @@
 from numbers import Number
 
-from ..input_token import Token
+from ..token import Token
 from .tree import Tree
 
 

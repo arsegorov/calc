@@ -1,7 +1,7 @@
 import pytest
 from calc import Calc
 from calc.op import Bracket, Op
-from calc.input_token import Token
+from calc.token import Token
 
 
 def test_float_wo_exp(calc_instance: Calc):
