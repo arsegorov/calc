@@ -2,15 +2,7 @@ from enum import Enum
 from numbers import Number
 
 
-class Op(Enum):
-    ADD = ("+", 0)
-    SUB = ("-", 0)
-    MULT = ("*", 1)
-    DIV = ("/", 1)
-    MOD = ("%", 1)
-    DIV_INT = ("//", 1)
-    EXP = ("**", 2)
-
+class OpWithPrecedence(Enum):
     def __init__(self, symbol, precedence):
         cls = self.__class__
         if any(symbol == e.symbol for e in cls):
@@ -61,6 +53,16 @@ class Op(Enum):
 
     def __le__(self, other):
         return self.__lt__(other) or self.__eq__(other)
+
+
+class Op(OpWithPrecedence):
+    ADD = ("+", 0)
+    SUB = ("-", 0)
+    MULT = ("*", 1)
+    DIV = ("/", 1)
+    MOD = ("%", 1)
+    DIV_INT = ("//", 1)
+    EXP = ("**", 2)
 
 
 class Bracket(Enum):

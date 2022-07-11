@@ -1,6 +1,5 @@
-from enum import Enum
 import pytest
-from calc.op import Op
+from calc.op import Op, OpWithPrecedence
 
 
 def test_eval():
@@ -41,14 +40,16 @@ def test_eval_exp_missing_args():
 
 
 def test_eval_unexpected_op():
-    class ExtendedOp(Enum):
+    class MockOp(OpWithPrecedence):
         CARROT = ("^", 3)
 
-        def __init__(self, symbol, precedence):
-            self.symbol = symbol
-            self.precedence = precedence
-
-    ExtendedOp.__bases__ = (Op,) + ExtendedOp.__bases__
-
     with pytest.raises(NotImplementedError, match=r"unexpected operation '\^'"):
-        ExtendedOp.CARROT.eval(lhs=2, rhs=2)
+        MockOp.CARROT.eval(lhs=2, rhs=2)
+
+
+def test_duplicate_op():
+    with pytest.raises(ValueError, match=r"operation '\+' already exists"):
+
+        class MockOp(OpWithPrecedence):
+            ADD = ("+", 0)
+            UNARY_ADD = ("+", 3)
