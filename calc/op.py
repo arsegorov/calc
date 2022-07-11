@@ -15,7 +15,7 @@ class Op(Enum):
         cls = self.__class__
         if any(symbol == e.symbol for e in cls):
             raise ValueError(
-                f"operations aren't allowed to share the symbol ('{symbol}')"
+                f"operations aren't allowed to share a symbol ('{symbol}')"
             )
 
         self.symbol: str = symbol
