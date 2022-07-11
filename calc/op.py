@@ -12,6 +12,12 @@ class Op(Enum):
     EXP = ("**", 2)
 
     def __init__(self, symbol, precedence):
+        cls = self.__class__
+        if any(symbol == e.symbol for e in cls):
+            raise ValueError(
+                f"operations aren't allowed to share the symbol ('{symbol}')"
+            )
+
         self.symbol: str = symbol
         self.precedence: int = precedence
 
@@ -49,7 +55,7 @@ class Op(Enum):
 
     def __eq__(self, other):
         if self.__class__ is other.__class__:
-            return self.symbol == other.symbol and self.precedence == other.precedence
+            return self.symbol == other.symbol
         return NotImplemented
 
     def __ge__(self, other):
