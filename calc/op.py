@@ -6,7 +6,9 @@ class OpWithPrecedence(Enum):
     def __init__(self, symbol, precedence):
         cls = self.__class__
         if any(symbol == e.symbol for e in cls):
-            raise ValueError(f"operation '{symbol}' already exists")
+            raise ValueError(
+                f"cannot create multiple operations with the same symbol ('{symbol}')"
+            )
 
         self.symbol: str = symbol
         self.precedence: int = precedence

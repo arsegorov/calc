@@ -48,7 +48,10 @@ def test_eval_unexpected_op():
 
 
 def test_duplicate_op():
-    with pytest.raises(ValueError, match=r"operation '\+' already exists"):
+    with pytest.raises(
+        ValueError,
+        match=r"cannot create multiple operations with the same symbol \('\+'\)",
+    ):
 
         class MockOp(OpWithPrecedence):
             ADD = ("+", 0)
