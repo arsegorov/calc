@@ -11,17 +11,17 @@ class Token(Generic[T]):
         self.end = end
 
     def __gt__(self, other):
-        if self.__class__ is other.__class__:
+        if isinstance(other, Token):
             return self.value > other.value
         return NotImplemented
 
     def __lt__(self, other):
-        if self.__class__ is other.__class__:
+        if isinstance(other, Token):
             return self.value < other.value
         return NotImplemented
 
     def __eq__(self, other):
-        if self.__class__ is other.__class__:
+        if isinstance(other, Token):
             return (
                 self.value == other.value
                 and self.start == other.start
@@ -30,7 +30,7 @@ class Token(Generic[T]):
         return NotImplemented
 
     def __ge__(self, other):
-        return self.__gt__(other) or self.__eq__(other)
+        return self > other or self == other
 
     def __le__(self, other):
-        return self.__lt__(other) or self.__eq__(other)
+        return self < other or self == other
