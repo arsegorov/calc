@@ -2,4 +2,4 @@
 omit =
     tests/*
     conftest.py
-    main.py
+    __main__.py
