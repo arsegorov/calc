@@ -14,9 +14,7 @@ class Op(Enum):
     def __init__(self, symbol, precedence):
         cls = self.__class__
         if any(symbol == e.symbol for e in cls):
-            raise ValueError(
-                f"operations aren't allowed to share a symbol ('{symbol}')"
-            )
+            raise ValueError(f"operation '{symbol}' already exists")
 
         self.symbol: str = symbol
         self.precedence: int = precedence
