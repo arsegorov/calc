@@ -36,25 +36,20 @@ class OpWithPrecedence(Enum):
         raise NotImplementedError(f"unexpected operation '{self.symbol}'")
 
     def __gt__(self, other):
-        if self.__class__ is other.__class__:
+        if isinstance(other, OpWithPrecedence):
             return self.precedence > other.precedence
         return NotImplemented
 
     def __lt__(self, other):
-        if self.__class__ is other.__class__:
+        if isinstance(other, OpWithPrecedence):
             return self.precedence < other.precedence
         return NotImplemented
 
-    def __eq__(self, other):
-        if self.__class__ is other.__class__:
-            return self.symbol == other.symbol
-        return NotImplemented
-
     def __ge__(self, other):
-        return self.__gt__(other) or self.__eq__(other)
+        return self > other or self == other
 
     def __le__(self, other):
-        return self.__lt__(other) or self.__eq__(other)
+        return self < other or self == other
 
 
 class Op(OpWithPrecedence):

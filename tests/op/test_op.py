@@ -56,3 +56,45 @@ def test_duplicate_op():
         class MockOp(OpWithPrecedence):
             ADD = ("+", 0)
             UNARY_ADD = ("+", 3)
+
+
+def test_gt():
+    assert Op.MULT > Op.ADD
+
+
+def test_lt():
+    assert Op.ADD < Op.MULT
+
+
+def test_eq():
+    assert Op.ADD == Op.ADD
+    assert Op.ADD != Op.SUB
+    assert Op.ADD != 2
+
+
+def test_ge():
+    assert Op.MULT >= Op.ADD
+    assert Op.ADD >= Op.ADD
+    assert not (Op.ADD >= Op.SUB or Op.ADD < Op.SUB)
+
+
+def test_le():
+    assert Op.ADD <= Op.MULT
+    assert Op.ADD <= Op.ADD
+    assert not (Op.ADD <= Op.SUB or Op.ADD > Op.SUB)
+
+
+def test_gt_unsupported():
+    with pytest.raises(
+        TypeError,
+        match=r"'>' not supported between instances of 'Op' and 'int'"
+    ):
+        _ = Op.ADD > 0
+
+
+def test_lt_unsupported():
+    with pytest.raises(
+        TypeError,
+        match=r"'<' not supported between instances of 'Op' and 'int'"
+    ):
+        _ = Op.ADD < 0
