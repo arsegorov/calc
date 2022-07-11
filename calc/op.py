@@ -16,27 +16,26 @@ class Op(Enum):
         self.precedence: int = precedence
 
     def eval(self, lhs: Number | None = None, rhs: Number = 0) -> Number:
-        symbol = self.symbol
-        if symbol == "+":
-            return (lhs or 0) + rhs
-        if symbol == "-":
-            return (lhs or 0) - rhs
+        if self.symbol not in "+-" and lhs is None:
+            raise ArithmeticError(f"missing the left-hand-side for '{self.symbol}'")
 
-        if lhs is None:
-            raise ArithmeticError(f"missing the left-hand-side for '{symbol}'")
+        match self.symbol:
+            case "+":
+                return (lhs or 0) + rhs
+            case "-":
+                return (lhs or 0) - rhs
+            case "*":
+                return lhs * rhs
+            case "/":
+                return lhs / rhs
+            case "//":
+                return lhs // rhs
+            case "%":
+                return lhs % rhs
+            case "**":
+                return lhs**rhs
 
-        if symbol == "*":
-            return lhs * rhs
-        if symbol == "/":
-            return lhs / rhs
-        if symbol == "//":
-            return lhs // rhs
-        if symbol == "%":
-            return lhs % rhs
-        if symbol == "**":
-            return lhs**rhs
-
-        raise NotImplementedError(f"unexpected operation '{symbol}'")
+        raise NotImplementedError(f"unexpected operation '{self.symbol}'")
 
     def __gt__(self, other):
         if self.__class__ is other.__class__:
