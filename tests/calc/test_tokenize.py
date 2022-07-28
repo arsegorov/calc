@@ -71,7 +71,7 @@ def test_bin(calc_instance: Calc):
 
 
 def test_bin_invalid(calc_instance: Calc):
-    with pytest.raises(ValueError, match=r"invalid literal for int\(\) with base 2"):
+    with pytest.raises(ValueError, match=r"invalid literal for int\(\)"):
         calc_instance.input = "0b12"
         calc_instance._tokenize()
 
@@ -83,13 +83,13 @@ def test_oct(calc_instance: Calc):
 
 
 def test_oct_invalid(calc_instance: Calc):
-    with pytest.raises(ValueError, match=r"invalid literal for int\(\) with base 8"):
+    with pytest.raises(ValueError, match=r"invalid literal for int\(\)"):
         calc_instance.input = "0o19"
         calc_instance._tokenize()
 
 
 def test_oct_w_exp_invalid(calc_instance: Calc):
-    with pytest.raises(ValueError, match=r"invalid literal for int\(\) with base 8"):
+    with pytest.raises(ValueError, match=r"invalid literal for int\(\)"):
         calc_instance.input = "0o77E+1"
         calc_instance._tokenize()
 
@@ -101,7 +101,7 @@ def test_hex(calc_instance: Calc):
 
 
 def test_hex_invalid(calc_instance: Calc):
-    with pytest.raises(ValueError, match=r"invalid literal for int\(\) with base 16"):
+    with pytest.raises(ValueError, match=r"invalid literal for int\(\)"):
         calc_instance.input = "0xfg"
         calc_instance._tokenize()
 

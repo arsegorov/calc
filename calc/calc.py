@@ -172,12 +172,8 @@ class Calc:
             match_text = match[0]
             val = None
             if match_text[0] in f".{digits}":  # Numeric token
-                if match_text[:2].lower() == "0b":
-                    val = int(match_text[2:], 2)
-                elif match_text[:2].lower() == "0o":
-                    val = int(match_text[2:], 8)
-                elif match_text[:2].lower() == "0x":
-                    val = int(match_text[2:], 16)
+                if match_text[:2].lower() in ("0b", "0o", "0x"):
+                    val = int(match_text, base=0)
                 else:
                     val = float(match_text)
                     if val.is_integer():
