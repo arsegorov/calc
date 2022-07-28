@@ -1,3 +1,4 @@
+from types import NotImplementedType
 from typing import Generic, TypeVar
 
 
@@ -10,17 +11,23 @@ class Token(Generic[T]):
         self.start = start
         self.end = end
 
-    def __gt__(self, other):
+    def __repr__(self) -> str:
+        return f"Token({self.value!r}, {self.start}, {self.end})"
+
+    def __str__(self) -> str:
+        return f"{self.value} ({self.start}-{self.end})"
+
+    def __gt__(self, other) -> bool | NotImplementedType:
         if isinstance(other, Token):
             return self.value > other.value
         return NotImplemented
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool | NotImplementedType:
         if isinstance(other, Token):
             return self.value < other.value
         return NotImplemented
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool | NotImplementedType:
         if isinstance(other, Token):
             return (
                 self.value == other.value
@@ -29,8 +36,8 @@ class Token(Generic[T]):
             )
         return NotImplemented
 
-    def __ge__(self, other):
+    def __ge__(self, other) -> bool | NotImplementedType:
         return self > other or self == other
 
-    def __le__(self, other):
+    def __le__(self, other) -> bool | NotImplementedType:
         return self < other or self == other

@@ -1,5 +1,6 @@
 from enum import Enum
 from numbers import Number
+from types import NotImplementedType
 
 
 class OpWithPrecedence(Enum):
@@ -35,20 +36,26 @@ class OpWithPrecedence(Enum):
 
         raise NotImplementedError(f"unexpected operation '{self.symbol}'")
 
-    def __gt__(self, other):
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}.{self.name}"
+
+    def __str__(self) -> str:
+        return f"'{self.symbol}'"
+
+    def __gt__(self, other) -> bool | NotImplementedType:
         if isinstance(other, OpWithPrecedence):
             return self.precedence > other.precedence
         return NotImplemented
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool | NotImplementedType:
         if isinstance(other, OpWithPrecedence):
             return self.precedence < other.precedence
         return NotImplemented
 
-    def __ge__(self, other):
+    def __ge__(self, other) -> bool | NotImplementedType:
         return self > other or self == other
 
-    def __le__(self, other):
+    def __le__(self, other) -> bool | NotImplementedType:
         return self < other or self == other
 
 
@@ -69,3 +76,9 @@ class Bracket(Enum):
     S_CLOSE = "]"
     C_OPEN = "{"
     C_CLOSE = "}"
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}.{self.name}"
+
+    def __str__(self) -> str:
+        return f"'{self.value}'"
